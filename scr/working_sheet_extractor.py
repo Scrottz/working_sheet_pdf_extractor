@@ -32,14 +32,14 @@ def main() -> None:
         pdf = pdfIO.PDFIO(pdf_filepath=filepath)
         pdf.pdf_read()
 
-        working_paper_numbers_names = strategy["name_func"](doc=pdf.doc, overview_pages=strategy["toc_pages"])
-        working_papers_pages = strategy["page_func"](doc=pdf.doc)
+        working_sheet_numbers_names = strategy["name_func"](doc=pdf.doc, overview_pages=strategy["toc_pages"])
+        working_sheets_pages = strategy["page_func"](doc=pdf.doc)
 
-        for ab_num, pages in working_papers_pages.items():
+        for ab_num, pages in working_sheets_pages.items():
             working_pdf = pdf.pdf_extract_working_pages(page_numbers=pages)
             output_path = SCRIPT_DIR / ".." / "data" / "output" / filepath.stem
             output_path.mkdir(exist_ok=True)
-            output_filepath = output_path / f"{ab_num}_{working_paper_numbers_names[ab_num]}.pdf"
+            output_filepath = output_path / f"{ab_num}_{working_sheet_numbers_names[ab_num]}.pdf"
             working_pdf.pdf_write(output_path=output_filepath)
 
 

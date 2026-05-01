@@ -23,11 +23,11 @@ class PDFIO():
         logger.info(f"PDF succesfully imported {self.pdf_filepath}")
 
     def pdf_extract_working_pages(self, page_numbers: list[int]):
-        working_paper_pdf = PDFIO(pdf_filepath=None)
-        working_paper_pdf.doc = pymupdf.open()
-        working_paper_pdf.doc.insert_pdf(self.doc, from_page=page_numbers[0], to_page=page_numbers[-1])
+        working_sheet_pdf = PDFIO(pdf_filepath=None)
+        working_sheet_pdf.doc = pymupdf.open()
+        working_sheet_pdf.doc.insert_pdf(self.doc, from_page=page_numbers[0], to_page=page_numbers[-1])
         logger.info(f"Extraktion of {len(page_numbers)} successfull")
-        return working_paper_pdf
+        return working_sheet_pdf
 
     def pdf_write(self, output_path=str):
         self.doc.save(
