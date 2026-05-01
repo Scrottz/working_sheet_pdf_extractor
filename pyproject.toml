@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "working_sheet_pdf_extractor"
+version = "0.1.0"
+description = "PDF-Arbeitsblatt-Extraktor"
+authors = [
+    {name = "Franz Keilholz", email = "franz@keilholz.biz"},
+]
+dependencies = [
+    "pymupdf>=1.27.2.3"
+]
+requires-python = ">=3.8"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lib*"]
