@@ -1,32 +1,46 @@
-# python
-from __future__ import annotations
 from pathlib import Path
+import re
 from lib.logging import setup_logger, get_logger
-from lib.pdfIO import write_working_sheets_outputs
-from lib.workbooks.F42_Beltz_TT_Zwangsstörungen_Fricke import F42_Beltz_TT_Zwangsstörungen_Fricke
-from lib.pdf_document_object_model import PdfDocument
-from pprint import pprint
+from lib import pdfIO
+from lib.workbooks import BOOK_STRATEGIES
 
 setup_logger()
 logger = get_logger(__name__)
 
-PDF_PATHS = {
-    "F42_Beltz_TT_Zwangsstörungen_Fricke": Path("/home/keilholz/code/working_sheet_pdf_extractor/data/input/F42_Beltz_TT_Zwangsstörungen_Fricke.pdf")
-}
+SCRIPT_DIR = Path(__file__).parent
+INPUT_DIR = SCRIPT_DIR / ".." / "data" / "input"
+OUTPUT_DIR = SCRIPT_DIR / ".." / "data" / "output"
+
+def sanitize_filename(name: str) -> str:
+    clean = re.sub(r'[<>:"/\\|?*]', '', name)
+    return clean.replace(" ", "_").strip("_")
+
 
 def main() -> None:
-    """Main entry: detect working sheets and write per-sheet PDF outputs."""
-
     logger.info("Starting processing")
 
-    pdf_obj = PdfDocument(pdf_filename="F42_Beltz_TT_Zwangsstörungen_Fricke", pdf_path=PDF_PATHS['F42_Beltz_TT_Zwangsstörungen_Fricke'])
-    handler = F42_Beltz_TT_Zwangsstörungen_Fricke(pdf_object=pdf_obj)
+    for filepath in INPUT_DIR.glob("*.pdf"):
+        prefix = filepath.stem.split("_")[0]
 
-    pdf_obj = handler.identify_working_sheets()
+        if prefix not in BOOK_STRATEGIES:
+            continue
 
-    pprint(pdf_obj.working_sheets)
-    print("\n\n\n\”-------------------------\n\n\n")
-    pprint(pdf_obj.to_dict())
+        strategy = BOOK_STRATEGIES[prefix]
+
+        logger.info(f"Processing {filepath.stem}")
+
+        pdf = pdfIO.PDFIO(pdf_filepath=filepath)
+        pdf.pdf_read()
+
+        working_paper_numbers_names = strategy["name_func"](doc=pdf.doc, overview_pages=strategy["toc_pages"])
+        working_papers_pages = strategy["page_func"](doc=pdf.doc)
+
+        for ab_num, pages in working_papers_pages.items():
+            working_pdf = pdf.pdf_extract_working_pages(page_numbers=pages)
+            output_path = SCRIPT_DIR / ".." / "data" / "output" / filepath.stem
+            output_path.mkdir(exist_ok=True)
+            output_filepath = output_path / f"{ab_num}_{working_paper_numbers_names[ab_num]}.pdf"
+            working_pdf.pdf_write(output_path=output_filepath)
 
 
 if __name__ == "__main__":
