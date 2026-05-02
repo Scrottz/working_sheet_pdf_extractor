@@ -20,13 +20,15 @@ class PDFIO():
 
     def pdf_read(self):
         self.doc =pymupdf.open(self.pdf_filepath)
-        logger.info(f"PDF succesfully imported {self.pdf_filepath}")
+        logger.debug(f"PDF succesfully imported {self.pdf_filepath}")
 
-    def pdf_extract_working_pages(self, page_numbers: list[int]):
+    def pdf_extract_pages(self, page_numbers: list[int], ignore_toc: list[int]):
         working_sheet_pdf = PDFIO(pdf_filepath=None)
         working_sheet_pdf.doc = pymupdf.open()
-        working_sheet_pdf.doc.insert_pdf(self.doc, from_page=page_numbers[0], to_page=page_numbers[-1])
-        logger.info(f"Extraktion of {len(page_numbers)} successfull")
+        for page_num in page_numbers:
+            if page_num not in ignore_toc:
+                working_sheet_pdf.doc.insert_pdf(self.doc, from_page=page_num, to_page=page_num)
+        logger.debug(f"Extraktion of {len(page_numbers)} pages successful")
         return working_sheet_pdf
 
     def pdf_write(self, output_path=str):
@@ -35,5 +37,5 @@ class PDFIO():
             garbage=3,
             deflate=True
         )
-        logger.info(f"File successfully saved to {output_path}")
+        logger.debug(f"File successfully saved to {output_path}")
 
