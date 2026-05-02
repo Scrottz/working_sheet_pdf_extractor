@@ -5,7 +5,7 @@ _FMT = "%(asctime)s | %(levelname)s | %(name)s:%(lineno)d | %(funcName)s | %(mes
 _FORMATTER = logging.Formatter(_FMT)
 
 
-def setup_logger(console_level: int = logging.DEBUG, root_level: int = logging.DEBUG) -> None:
+def setup_logger(console_level: int = logging.INFO, root_level: int = logging.DEBUG) -> None:
 
     root = logging.getLogger()
 
