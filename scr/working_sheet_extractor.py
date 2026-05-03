@@ -1,5 +1,4 @@
 from pathlib import Path
-import re
 from lib.logging import setup_logger, get_logger
 from lib import pdfIO
 from lib.workbooks import BOOK_STRATEGIES
@@ -11,8 +10,8 @@ SCRIPT_DIR = Path(__file__).parent
 INPUT_DIR = SCRIPT_DIR / ".." / "data" / "input"
 OUTPUT_DIR = SCRIPT_DIR / ".." / "data" / "output"
 
+
 def main() -> None:
-    logger.info("Starting processing")
 
     for filepath in INPUT_DIR.glob("*.pdf"):
         output_path = SCRIPT_DIR / ".." / "data" / "output" / filepath.stem
@@ -35,10 +34,10 @@ def main() -> None:
         for ab_num, pages in working_sheets_pages.items():
             working_pdf = pdf.pdf_extract_pages(page_numbers=pages, ignore_toc=strategy["toc_pages"])
             output_path.mkdir(exist_ok=True)
-            sheet_name = working_sheet_numbers_names[ab_num].rstrip("?")
-            output_filepath = output_path / f"{ab_num}_{working_sheet_numbers_names[ab_num]}.pdf"
+            sheet_name = working_sheet_numbers_names[ab_num].strip("?")
+            output_filepath = output_path / f"{ab_num}_{sheet_name}.pdf"
             working_pdf.pdf_write(output_path=output_filepath)
-        logger.info(f"Done. Files saved to {output_path.resolve()}")
+        logger.info(f"{len(working_sheets_pages.items())} Files saved to {output_path.resolve()}")
 
 
 if __name__ == "__main__":
