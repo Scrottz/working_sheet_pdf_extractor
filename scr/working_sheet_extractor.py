@@ -7,15 +7,15 @@ setup_logger()
 logger = get_logger(__name__)
 
 SCRIPT_DIR = Path(__file__).parent
-INPUT_DIR = SCRIPT_DIR / ".." / "data" / "input"
-OUTPUT_DIR = SCRIPT_DIR / ".." / "data" / "output"
+DATA_DIR = SCRIPT_DIR.parent / "data"
+INPUT_DIR = DATA_DIR / "input"
+OUTPUT_DIR = DATA_DIR / "output"
 
 
 def main() -> None:
 
     for filepath in INPUT_DIR.glob("*.pdf"):
-        output_path = SCRIPT_DIR / ".." / "data" / "output" / filepath.stem
-
+        output_path = OUTPUT_DIR / filepath.stem
         prefix = filepath.stem.split("_")[0].replace(".", "_")
 
         if prefix not in BOOK_STRATEGIES:
